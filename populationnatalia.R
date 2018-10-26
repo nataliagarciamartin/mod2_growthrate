@@ -9,7 +9,7 @@ e = 0.5
 eps = 0.3
 pop = 100
 J = 1000
-v_0 <- c(0.5,0.3,0.2)
+v_0 <- c(0.1,0.2,0.7)
 
 sample_L <- function(b, c, d, e, eps){
   L <- matrix(0,3,3)
@@ -25,7 +25,7 @@ population <- numeric(T+1)
 U <- v_0
 distrib <- matrix(0,T+1,N)
 population[1] <- pop
-distrib[1] <- v_0
+distrib[1,] <- v_0
 
 for (t in seq_len(T)){
   L <- sample_L(b,c,d,e,eps)
@@ -36,8 +36,177 @@ for (t in seq_len(T)){
 plot(population, type="l", ylab="Population size", xlab="Time")
 
 
-plot1=plot(distrib[,1], col=1, type="l", ylim=c(0,1))+lines(distrib[,2], col=2, type="l", lty=1)+lines(distrib[,3], col=3, type="l", lty=1)
+plot1=plot(distrib[,1], col=1, type="l", ylim=c(0,0.8))+lines(distrib[,2], col=2, type="l", lty=1)+lines(distrib[,3], col=3, type="l", lty=1)
 legend(legend=c("Proportion Age 1", "Proportion Age 2", "Proportion Age 3"), col=1:3, "topright", lty=1)
 
 
+distrib[1:10,]   # it quickly converges to the stationary distributions, let's look at the first 15 steps
 
+plot1=plot(distrib[1:15,1], col=1, type="l", ylim=c(0,0.8))+lines(distrib[1:15,2], col=2, type="l", lty=1)+lines(distrib[1:15,3], col=3, type="l", lty=1)
+legend(legend=c("Proportion Age 1", "Proportion Age 2", "Proportion Age 3"), col=1:3, "topright", lty=1)
+
+
+# Let's see how v[1] behaves with different starting values v_0
+
+
+v_0 <- c(0,0.5,0.5)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+plot(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(0.1,0.2,0.7)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+v_0 <- c(0.2,0.4,0.4)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(0.3,0.4,0.3)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+
+v_0 <- c(0.4,0.3,0.3)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(0.5,0.3,0.2)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+v_0 <- c(0.6,0.2,0.2)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(0.7,0.2,0.1)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+v_0 <- c(0.8,0.1,0.1)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(0.9,0.1,0)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+
+
+v_0 <- c(1,0,0)
+population <- numeric(T+1)
+U <- v_0
+distrib <- matrix(0,T+1,N)
+population[1] <- pop
+distrib[1,] <- v_0
+for (t in seq_len(T)){
+  L <- sample_L(b,c,d,e,eps)
+  U=L%*%U
+  population[t+1]=sum(U)
+  distrib[t+1,]=U/population[t+1]
+}
+lines(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
