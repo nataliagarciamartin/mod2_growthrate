@@ -9,7 +9,7 @@ e = 0.5
 eps = 0.3
 pop = 100
 J = 1000
-v_0 <- c(0.1,0.2,0.7)
+v_0 <- c(0.1,0.7,0.2)
 
 sample_L <- function(b, c, d, e, eps){
   L <- matrix(0,3,3)
@@ -33,11 +33,17 @@ for (t in seq_len(T)){
   population[t+1]=sum(U)
   distrib[t+1,]=U/population[t+1]
 }
-plot(population, type="l", ylab="Population size", xlab="Time")
+#plot(population, type="l", ylab="Population size", xlab="Time")   #ignore
 
 
-plot1=plot(distrib[,1], col=1, type="l", ylim=c(0,0.8))+lines(distrib[,2], col=2, type="l", lty=1)+lines(distrib[,3], col=3, type="l", lty=1)
-legend(legend=c("Proportion Age 1", "Proportion Age 2", "Proportion Age 3"), col=1:3, "topright", lty=1)
+means <- apply(distrib[200:1001,], 2, mean)
+
+
+plot1=plot(distrib[,1], col=1, type="l", ylim=c(0,0.8), lty=2)+lines(distrib[,2], col=2, type="l", lty=2)+lines(distrib[,3], col=3, type="l", lty=2)
+legend(legend=c("Proportion Age 1", "Proportion Age 2", "Proportion Age 3"), col=1:3, "topright", lty=2)
+abline(h=means[1:3], col=1:3, lwd=2)
+
+
 
 
 distrib[1:10,]   # it quickly converges to the stationary distributions, let's look at the first 15 steps
@@ -61,7 +67,7 @@ for (t in seq_len(T)){
   population[t+1]=sum(U)
   distrib[t+1,]=U/population[t+1]
 }
-plot(distrib[1:20,1], col=1, type="l", ylim=c(0,0.8))
+plot(distrib[1:20,1], col=1, type="l", ylim=c(0,1))
 
 
 v_0 <- c(0.1,0.2,0.7)
