@@ -7,14 +7,14 @@ source("run_markov.R")
 # Parameters
 
 N <- 3 # number og age classes
-M <- 5 # number of Leslie matrices
+M <- 2 # number of Leslie matrices
 
 b_1 <- 1.5 # birth rate of class 1
 b_2 <- 0.8 # birth rate of class 2
 lambda_1 <- 0.9 # survival rate of class 0 (juvenile class)
-lambda_2 <- 0.7 # survival rate of class 1
+lambda_2 <- 0.6 # survival rate of class 1
 
-eps <- 0.2 # semi-range of parameters
+eps <- 0.3 # semi-range of parameters
 
 T <- 500 # number of time steps
 pop <- 100 # initial number of individuals  
@@ -24,7 +24,8 @@ K <- 10^6 # maximal number of individuals
 # Simulation: 5 chains
 
 ens_M <- create_M(b_1, b_2, lambda_1, lambda_2, eps, M)
-p <- rep(1,M) / M # probability distribution on M
+#p <- rep(1,M) / M # probability distribution on M
+p <- c(0.1, 0.9)
 
 w_01 <- c(0.2,0.4,0.4) # initial state 1
 results_1 <- run_markov(w_01, pop, ens_M, p, T)
@@ -93,8 +94,12 @@ a_j <- cumsum(ratio) / seq_len(J)
 var_j <- cumsum((ratio - cumsum(ratio)/seq_len(J))^2) / c(1,seq_len(J-1))
 
 plot(seq_len(J), a_j, type='l', main='Mean value of the average growth rate vs
-     number of chains', xlab='J', ylab='average growth rate a_J^(t)')
+     number of chains', xlab='J', ylab='average growth rate a_J^(t)',
+     cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 abline(h=mean(ratio), col="red", lty=2, lwd=2)
+legend("topright", legend="mean", col="red", lty=2, cex=1.5)
+
+
 plot(seq_len(J), var_j, type='l', main='Estimated variance of the average growth
      rate vs number of chains', xlab='J', ylab='variance of a_J^(T)')
 abline(h=var(ratio), col="red", lty=2, lwd=2)
@@ -120,24 +125,30 @@ a_5 <- cumsum(log_pop[,5] - log_pop[1,1]) / c(1, seq_len(T))
 
 plot(seq_len(T), a_1[-1], type='l', main='Value of the average growth rate along the
      times steps t', xlab='time step t', ylab='average growth rate a^(t)', 
-     ylim=c(-4.4, -4.2))
+     ylim=c(-4.38, -4.25), cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 lines(seq_len(T), a_2[-1], type='l',col="green")
 lines(seq_len(T), a_3[-1], type='l',col="blue")
 lines(seq_len(T), a_4[-1], type='l',col="pink")
 lines(seq_len(T), a_5[-1], type='l',col="purple")
 abline(h=mean_aj, col="red", lty=2, lwd=2)
-abline(h=sup_ic, col="red", lty=2, lwd=2)
-abline(h=inf_ic, col="red", lty=2, lwd=2)
+abline(h=sup_ic, col="orange", lty=2, lwd=2)
+abline(h=inf_ic, col="orange", lty=2, lwd=2)
+legend("topright", legend=c("mean","CI 95%"), col=c("red", "orange"),
+       lty=c(2,2), cex=1.5)
 
 # histogram of the average growth rate
-hist(ratio, breaks=15,freq=F, main="Histogram and experimental fitted density of
-     the average growth rate", xlab="a_t")
+hist(ratio, breaks=15,freq=F, main="Experimental density of the average growth rate",
+     xlab="a_t", cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5)
 lines(density(ratio), col="red", lwd=2) 
 curve(dnorm(x, mean=mean(ratio), sd=sd(ratio)), add=TRUE, lty="dotted",
       col="darkgreen", lwd=3)
+legend("topleft", legend=c("Fitted","Normal"), col=c("red", "dark green"),
+       lty=c(1,2), cex=1.5)
 
 
 ################################################################################
+# Computes top eigenvectors
+
 E_L <- create_M(b_1, b_2, lambda_1, lambda_2, eps, 1)[[1]]
 eig <- eigen(E_L)
 if (any(sapply(eig$values, is.complex))){
@@ -152,23 +163,35 @@ if (any(sapply(eig$values, is.complex))){
 eig_vectors <- top_eigen(ens_M)$vectors
 
 ################################################################################
-# Plots
+# Density plots
 
-#plot(seq_len(T+1), log_pop[,1], type='l')
-#print(mean(ratio))
-#print(a_true)
+top_eig <- top_eig / sum(top_eig) # renormalized with L1 norm
 
-plot(seq_len(J), moy, type='l')
-#abline(h=a_true, col="blue")
-#plot(seq_len(J), var, type='l')
-
-plot(w_T[2,], w_T[3,])
-#Arrows(0, 0, top_eig[2], top_eig[3], col="blue")
-Arrows(0.37, 0.135, 0, eig_vectors[3,1]/eig_vectors[1,1], col="blue")
-#Arrows(c(0,0,0), c(0,0,0), abs(eig_vectors[2,]), abs(eig_vectors[3,]), col="blue")
+# for M = 1 and continuous case
+plot(w_T[2,], w_T[3,], main="2D density of the normalized population at T",
+     xlab="w(1)", ylab="w(2)", cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
+     cex.sub=1.5, xlim= c(0, 0.6), ylim=c(0,0.3), pch=17)
+Arrows(c(0,0,0), c(0,0,0), top_eig[2], top_eig[3], col="blue", lwd=2.5)
+legend("topleft", legend="Top eigen vector of E(L)", col="blue", lty=1, cex=1.5, lwd=2.5)
 
 
-#abline(a=0, b=eig_vectors[3,1]/eig_vectors[2,1], col="blue")
+eig_vectors <- eig_vectors / colSums(abs(eig_vectors))
 
-plot(seq_len(5),seq_len(5))
-abline(a=5, b=-1, col="blue")
+# for M = 2
+plot(w_T[2,], w_T[3,], main="2D density of the normalized population at T",
+     xlab="w(1)", ylab="w(2)", cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5,
+     xlim= c(0, 0.5), ylim=c(0,0.25), pch=17)
+Arrows(c(0,0,0), c(0,0,0), - eig_vectors[2,1], - eig_vectors[3,1], col="blue", lwd=2.5)
+Arrows(c(0,0,0), c(0,0,0), eig_vectors[2,2], eig_vectors[3,2], col="red", lwd=2.5)
+legend("topleft", title="Top eigen vectors", legend=c("L1","L2"), col=c("blue", "red"),
+       lty=1, cex=1.5, lwd=2.5)
+
+# for M = 3
+plot(w_T[2,], w_T[3,], main="2D density of the normalized population at T",
+     xlab="w(1)", ylab="w(2)", cex.lab=1.5, cex.axis=1.5, cex.main=1.5, cex.sub=1.5,
+     xlim= c(0, 0.5), ylim=c(0,0.25), pch=17)
+Arrows(c(0,0,0), c(0,0,0), - eig_vectors[2,1], - eig_vectors[3,1], col="blue", lwd=2.5)
+Arrows(c(0,0,0), c(0,0,0), eig_vectors[2,2], eig_vectors[3,2], col="red", lwd=2.5)
+Arrows(c(0,0,0), c(0,0,0), eig_vectors[2,3], eig_vectors[3,3], col="darkgreen", lwd=2.5)
+legend("topleft", title="Top eigen vectors", legend=c("L1","L2","L3"),
+       col=c("blue", "red", "darkgreen"), lty=1, cex=1.5, lwd=2.5)

@@ -1,4 +1,11 @@
+b_1 <- 1.5 # birth rate of class 1
+b_2 <- 0.8 # birth rate of class 2
+lambda_1 <- 0.9 # survival rate of class 0 (juvenile class)
+lambda_2 <- 0.6 # survival rate of class 1
 
+eps <- 0.3 # semi-range of parameters
+
+################################################################################
 
 run_markov <- function(w0, pop, ens_M, p, T){
   
